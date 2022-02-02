@@ -1,7 +1,7 @@
 use core::mem;
 use core::ops::BitOr;
 
-use rp_pico::hal;
+use rp_pico::hal as hal;
 
 use cortex_m::delay::Delay;
 use embedded_hal::digital::v2::OutputPin;
@@ -453,32 +453,34 @@ impl<K: OptionalOutputPin, L: PinId, M: OptionalOutputPin, N: OptionalOutputPin,
         let start_x = x;
         let mut end_x = x;
         let height = font.get_height() as u16;
-        let screen_height = self.height;
         let mut x = x;
         let mut y = y;
-
-        let mut break_line = move || {
-            if x > end_x {
-                end_x = x;
-            }
-            x = start_x;
-            y += height;
-            y + height > screen_height
-        };
 
         let render_buffer = &mut [0u8; BUFFER_SIZE as usize * 2];
 
         for c in text.chars() {
             if c == '\n' {
-                if break_line() {
+                if x > end_x {
+                    end_x = x;
+                }
+                x = start_x;
+                y += height;
+                if y + height > self.height as u16 {
                     return (end_x, y);
                 } else {
                     continue;
                 }
             }
             if let Some((buf, w)) = font.get_char(c) {
-                if x + w as u16 > self.width && !break_line() {
-                    return (end_x, y);
+                if x + w as u16 > self.width {
+                    if x > end_x {
+                        end_x = x;
+                    }
+                    x = start_x;
+                    y += height;
+                    if y + height > self.height as u16 {
+                        return (end_x, y);
+                    }
                 }
                 self.set_window(x, y, x + w as u16 - 1, y + height - 1);
 

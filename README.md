@@ -14,7 +14,7 @@ The driver support for:
 
 Add this to `Cargo.toml`
 ```toml
-rp2040-st7789 = { version = "0.1.0", git = "https://github.com/ri-char/rp2040-st7789"}
+rp2040-st7789 = { version = "0.1.0", git = "https://github.com/ri-char/`rp2040-st7789`"}
 ```
 
 ## Font
